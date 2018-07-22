@@ -2,7 +2,8 @@
 #define NOTES_INTER
 
 #define throw(str) {fprintf(stderr, "%s\n", str); exit(1);}
-#define NOTES_FILENAME "notes"
+#define NOTES_FILENAME "/home/noah/Desktop/notes"
+#define NOTES_MAXSTR 500
 
 #include <string.h>
 #include <stdio.h>

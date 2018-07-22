@@ -23,8 +23,8 @@ int main(int argc, char * argv[]){
     throw("error, main: please enter a subject, title, and place");
 
   FILE * file = fopen(NOTES_FILENAME, "a");
-
-  fprintf(file,"%s\n", __DATE__);
+  
+  fprintf(file,"%s, %s\n", __DATE__, __TIME__);
   fprintf(file, "%s, ", subj);
   fprintf(file, "%s. ", title);
   fprintf(file, "%s.\n", place);
@@ -36,9 +36,14 @@ int main(int argc, char * argv[]){
 
 // Checks to see if prompt is in args[]. Ensures that the prompt preceedes an argument as opposed to a second
 // prompt (in const char * prompts[]).
-char * getPromptStr(const char * prompt, const char * prompts[], const int promptLen, char * args[], int argc){
+char * getPromptStr(const char * prompt, const char * prompts[], const int promptLen,
+		    char * args[], int argc){
   short loc = 0;
   short promptCount = 0;
+  char * fullString = calloc(NOTES_MAXSTR, sizeof(char));
+  for(int i = 0; i < NOTES_MAXSTR; ++i)
+    fullString[i] = '\0';
+  char temp[NOTES_MAXSTR] = {'\0'};
   
   for(int i = 0; i < argc; ++i){
     if(strcmp(args[i], prompt) == 0){
@@ -57,7 +62,16 @@ char * getPromptStr(const char * prompt, const char * prompts[], const int promp
   if(inStrArray(prompts,args[loc+1],promptLen)){
     throw("error, getPromptStr: next string is a prompt\n");
   }
-  return args[loc+1];
+  
+  for(int i = 0; loc + i + 1 < argc && !inStrArray(prompts, args[loc+i+1],promptLen) ; ++i){
+    char * space = calloc( 1, sizeof(char));
+    space[0] =' ';
+    strcat(fullString, space);
+    strcat(fullString, args[loc+i+1]);
+    free(space);
+  }
+  
+  return fullString;
 }
 
 short inStrArray(const char * arr[], char * val, int arrlen){
@@ -68,6 +82,3 @@ short inStrArray(const char * arr[], char * val, int arrlen){
   return 0;
 }
 
-/*
-  note -s Books -t easat of eden -p twitter
-*/
