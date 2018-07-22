@@ -7,6 +7,8 @@ int main(int argc, char * argv[]){
   const static char * sigil[] = {"-s", "-t", "-p", "-h"};
   const static char * help =
     "This is a note-taking program.\n-s is the Subject, -t is the Title, -p is the place this note was found (for example, found on twitter). Only -p is optional";
+  char * info[] = {NULL, NULL, NULL};
+  FILE * file = fopen(NOTES_FILENAME, "a");
 
   if (argc == 1){ // This program needs input prefixed with a sigil (above) to work.
     throw("error, main: Not enough arguments");
@@ -15,20 +17,17 @@ int main(int argc, char * argv[]){
     throw(help);
   }
 
-  char * subj = getPromptStr(sigil[0], sigil, sigils, argv, argc);
-  char * title = getPromptStr(sigil[1], sigil, sigils, argv, argc);
-  char * place = getPromptStr(sigil[2], sigil, sigils, argv, argc);
-
-  if(subj == NULL || title == NULL || place == NULL)
-    throw("error, main: please enter a subject, title, and place");
-
-  FILE * file = fopen(NOTES_FILENAME, "a");
-  
   fprintf(file,"%s, %s\n", __DATE__, __TIME__);
-  fprintf(file, "%s, ", subj);
-  fprintf(file, "%s. ", title);
-  fprintf(file, "%s.\n", place);
+  for(int i = 0; i < NOTES_INFO_LEN; ++i){
+    info[i] = calloc(NOTES_MAXSTR, sizeof(char));
+    getPromptStr(sigil[i], sigil, sigils, argv, argc, info[i]);
+    fprintf(file, "%s. ", info[i]);
+  }
 
+  fprintf(file,"\n");
+  
+  for(int i =0; i < NOTES_INFO_LEN; ++i)
+    free(info[i]);
   fclose(file);
   
   return 0;
@@ -36,13 +35,10 @@ int main(int argc, char * argv[]){
 
 // Checks to see if prompt is in args[]. Ensures that the prompt preceedes an argument as opposed to a second
 // prompt (in const char * prompts[]).
-char * getPromptStr(const char * prompt, const char * prompts[], const int promptLen,
-		    char * args[], int argc){
+void getPromptStr(const char * prompt, const char * prompts[], const int promptLen,
+		  char * args[], int argc, char * ret){
   short loc = 0;
   short promptCount = 0;
-  char * fullString = calloc(NOTES_MAXSTR, sizeof(char));
-  for(int i = 0; i < NOTES_MAXSTR; ++i)
-    fullString[i] = '\0';
   char temp[NOTES_MAXSTR] = {'\0'};
   
   for(int i = 0; i < argc; ++i){
@@ -51,7 +47,8 @@ char * getPromptStr(const char * prompt, const char * prompts[], const int promp
       ++promptCount;
     }
   }
-  if (promptCount == 0) return NULL;
+  if (promptCount == 0)
+    throw("error, getPromptStr: not all prompts present");
 
   if (1 < promptCount){
     throw("error, getPromptStr: too many instances of the prompt\n");
@@ -64,14 +61,12 @@ char * getPromptStr(const char * prompt, const char * prompts[], const int promp
   }
   
   for(int i = 0; loc + i + 1 < argc && !inStrArray(prompts, args[loc+i+1],promptLen) ; ++i){
-    char * space = calloc( 1, sizeof(char));
-    space[0] =' ';
-    strcat(fullString, space);
-    strcat(fullString, args[loc+i+1]);
-    free(space);
+    
+    char space =' ';
+    strcat(ret, &space);
+    strcat(ret, args[loc+i+1]);
+
   }
-  
-  return fullString;
 }
 
 short inStrArray(const char * arr[], char * val, int arrlen){
