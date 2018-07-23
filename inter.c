@@ -6,7 +6,7 @@ int main(int argc, char * argv[]){
   const static int sigils = 4;
   const static char * sigil[] = {"-s", "-t", "-p", "-h"};
   const static char * help =
-    "This is a note-taking program.\n-s is the Subject, -t is the Title, -p is the place this note was found (for example, found on twitter). Only -p is optional";
+    "This is a note-taking program.\n-s is the Subject, -t is the Title, -p is the place this note was found (for example, found on twitter). 'look' as the first argument will open your current notes.";
   char * info[] = {NULL, NULL, NULL};
   FILE * file;
 
