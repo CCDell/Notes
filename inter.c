@@ -8,7 +8,7 @@ int main(int argc, char * argv[]){
   const static char * help =
     "This is a note-taking program.\n-s is the Subject, -t is the Title, -p is the place this note was found (for example, found on twitter). Only -p is optional";
   char * info[] = {NULL, NULL, NULL};
-  FILE * file = fopen(NOTES_FILENAME, "a");
+  FILE * file;
 
   if (argc == 1){ // This program needs input prefixed with a sigil (above) to work.
     throw("error, main: Not enough arguments");
@@ -16,6 +16,13 @@ int main(int argc, char * argv[]){
   else if(strcmp(argv[1], sigil[3]) == 0){ // If the help sigil is inputed give them help
     throw(help);
   }
+  else if(strcmp(argv[1], "look") == 0 ){
+    system("emacs ~/Desktop/notes");
+    exit(0);
+  }
+  printf("%s\n", argv[1]);
+  
+  file = fopen(NOTES_FILENAME, "a");
 
   fprintf(file,"%s, %s\n", __DATE__, __TIME__);
   for(int i = 0; i < NOTES_INFO_LEN; ++i){
