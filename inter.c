@@ -27,7 +27,10 @@ int main(int argc, char * argv[]){
   fprintf(file,"%s, %s\n", __DATE__, __TIME__);
   for(int i = 0; i < NOTES_INFO_LEN; ++i){
     info[i] = calloc(NOTES_MAXSTR, sizeof(char));
+    memset(info[i], '\0', NOTES_MAXSTR);
+    
     getPromptStr(sigil[i], sigil, sigils, argv, argc, info[i]);
+    
     fprintf(file, "%s. ", info[i]);
   }
 
@@ -47,6 +50,7 @@ void getPromptStr(const char * prompt, const char * prompts[], const int promptL
   short loc = 0;
   short promptCount = 0;
   char temp[NOTES_MAXSTR] = {'\0'};
+  memset(temp, '\0', NOTES_MAXSTR);
   
   for(int i = 0; i < argc; ++i){
     if(strcmp(args[i], prompt) == 0){
@@ -69,11 +73,11 @@ void getPromptStr(const char * prompt, const char * prompts[], const int promptL
   
   for(int i = 0; loc + i + 1 < argc && !inStrArray(prompts, args[loc+i+1],promptLen) ; ++i){
     
-    char space =' ';
-    strcat(ret, &space);
+    char space[2] = {' ', '\0'};
+    strcat(ret, space);
     strcat(ret, args[loc+i+1]);
-
   }
+  printf("\n");
 }
 
 short inStrArray(const char * arr[], char * val, int arrlen){
