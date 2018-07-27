@@ -20,7 +20,6 @@ int main(int argc, char * argv[]){
     system("emacs ~/Desktop/notes");
     exit(0);
   }
-  printf("%s\n", argv[1]);
   
   file = fopen(NOTES_FILENAME, "a");
 
@@ -77,7 +76,6 @@ void getPromptStr(const char * prompt, const char * prompts[], const int promptL
     strcat(ret, space);
     strcat(ret, args[loc+i+1]);
   }
-  printf("\n");
 }
 
 short inStrArray(const char * arr[], char * val, int arrlen){
