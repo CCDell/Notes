@@ -1,14 +1,22 @@
 #include "inter.h"
 
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 
 int main(int argc, char * argv[]){
+
   const static int sigils = 4;
   const static char * sigil[] = {"-s", "-t", "-p", "-h"};
   const static char * help =
     "This is a note-taking program.\n-s is the Subject, -t is the Title, -p is the place this note was found (for example, found on twitter). 'look' as the first argument will open your current notes.";
   char * info[] = {NULL, NULL, NULL};
   FILE * file;
+  time_t t;
+  struct tm * strt;
+  char * stringt = calloc(NOTES_MAXSTR, sizeof(char));
 
   if (argc == 1){ // This program needs input prefixed with a sigil (above) to work.
     throw("error, main: Not enough arguments");
@@ -17,13 +25,21 @@ int main(int argc, char * argv[]){
     throw(help);
   }
   else if(strcmp(argv[1], "look") == 0 ){
-    system("emacs ~/Desktop/notes");
+    system("gedit ~/Desktop/notes");
     exit(0);
   }
   
   file = fopen(NOTES_FILENAME, "a");
 
-  fprintf(file,"%s, %s\n", __DATE__, __TIME__);
+
+  time(&t);
+  strt =  localtime(&t);
+  asctime(strt);
+  
+  strftime(stringt, NOTES_MAXSTR, "%c", strt);
+  fprintf (file,"%s\n", stringt);
+  free(stringt);
+
   for(int i = 0; i < NOTES_INFO_LEN; ++i){
     info[i] = calloc(NOTES_MAXSTR, sizeof(char));
     memset(info[i], '\0', NOTES_MAXSTR);
@@ -40,7 +56,7 @@ int main(int argc, char * argv[]){
   fclose(file);
   
   return 0;
-}
+  }
 
 // Checks to see if prompt is in args[]. Ensures that the prompt preceedes an argument as opposed to a second
 // prompt (in const char * prompts[]).
@@ -79,10 +95,9 @@ void getPromptStr(const char * prompt, const char * prompts[], const int promptL
 }
 
 short inStrArray(const char * arr[], char * val, int arrlen){
-  for(int i = 0; i < arrlen; ++i){
-    if(strcmp(arr[i], val)==0)
-      return 1;
+for(int i = 0; i < arrlen; ++i){
+if(strcmp(arr[i], val)==0)
+  return 1;
   }
   return 0;
 }
-
